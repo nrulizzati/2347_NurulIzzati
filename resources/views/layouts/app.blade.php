@@ -33,7 +33,7 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f0f4f8; /* Latar belakang sedikit kebiruan/abu-abu */
             color: var(--custom-dark-text);
-            padding-top: 70px; /* Space untuk fixed navbar */
+            padding-top: 50px; /* Space untuk fixed navbar */
         }
 
         .navbar-custom {
@@ -59,7 +59,6 @@
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            margin-top: 20px;
         }
 
         .card {
@@ -161,8 +160,8 @@
             margin-bottom: 1.5rem;
             color: var(--custom-blue);
         }
-        .main-container h1 { /* Khusus untuk H1 di dalam .main-container */
-             color: var(--custom-dark-text); /* H1 konten utama, jangan terlalu biru */
+        .main-container h1 { 
+             color: var(--custom-dark-text); 
         }
 
         .alert {
@@ -202,16 +201,55 @@
                                 <i class="bi bi-list-ul me-1"></i>Daftar Alumni
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('alumni.create') ? 'active' : '' }}" href="{{ route('alumni.create') }}">
-                                <i class="bi bi-person-plus-fill me-1"></i>Tambah Alumni
-                            </a>
-                        </li>
+                        @auth
+                            @if(Auth::user()->role == 'admin')
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('alumni.create') ? 'active' : '' }}" href="{{ route('alumni.create') }}">
+                                        <i class="bi bi-person-plus-fill me-1"></i>Tambah Alumni
+                                    </a>
+                                </li>
+                            @endif
+                        @endauth
                     </ul>
 
                     <!-- Right Side Of Navbar (jika perlu login nanti) -->
                     <ul class="navbar-nav ms-auto">
-                        {{-- Placeholder untuk auth links --}}
+                        @guest
+                            @if (Route::has('auth.login'))
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('auth.login') ? 'active' : '' }}" href="{{ route('auth.login') }}">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                                    </a>
+                                </li>
+                            @endif
+                            @if (Route::has('auth.register'))
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('auth.register') ? 'active' : '' }}" href="{{ route('auth.register') }}">
+                                        <i class="bi bi-person-plus-fill me-1"></i>Register
+                                    </a>
+                                </li>
+                            @endif
+                        @else
+                            <li class="nav-item dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
+                                    @if(Auth::user()->role == 'admin') <span class="badge bg-danger ms-1">Admin</span> @endif
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end animate slideIn" aria-labelledby="navbarDropdown"> {{-- Menambahkan animasi dropdown Bootstrap --}}
+                                    <a class="dropdown-item" href="{{ route('profile.show') }}"> {{-- Pastikan route profile.show sudah ada --}}
+                                        <i class="bi bi-person-badge me-2"></i>Profil Saya
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="{{ route('auth.logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </a>
+                                    <form id="logout-form" action="{{ route('auth.logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </div>
+                            </li>
+                        @endguest
                     </ul>
                 </div>
             </div>

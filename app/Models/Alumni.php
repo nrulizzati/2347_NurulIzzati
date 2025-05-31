@@ -29,15 +29,30 @@ class Alumni extends Model
         'sertifikasi_profesional',
         'bersedia_menjadi_mentor',
         'info_kontak_karier',
+        'is_verified',
+        'verified_at',
+        'verified_by',
     ];
 
     protected $casts = [
     'bersedia_menjadi_mentor' => 'boolean',
     'tahun_lulus' => 'integer', 
+    'is_verified' => 'boolean',
+    'verified_at' => 'datetime',
     ];
 
     public function pengalamanKerja()
     {
         return $this->hasMany(PengalamanKerja::class)->orderBy('tanggal_mulai', 'desc');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function verifier()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }
